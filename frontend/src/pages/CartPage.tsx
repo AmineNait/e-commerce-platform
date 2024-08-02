@@ -4,6 +4,10 @@ import useCart from "../hooks/useCart";
 const CartPage: React.FC = () => {
   const { cart, addToCart, removeFromCart, clearCart } = useCart();
 
+  const handleAddToCart = () => {
+    addToCart({ id: Date.now(), name: "New Item", price: 50, quantity: 1 });
+  };
+
   return (
     <div>
       <h1>Cart Page</h1>
@@ -15,18 +19,7 @@ const CartPage: React.FC = () => {
           </li>
         ))}
       </ul>
-      <button
-        onClick={() =>
-          addToCart({
-            id: Date.now(),
-            name: "New Item",
-            price: 50,
-            quantity: 1,
-          })
-        }
-      >
-        Add Item
-      </button>
+      <button onClick={handleAddToCart}>Add Item</button>
       <button onClick={clearCart}>Clear Cart</button>
     </div>
   );

@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import useProducts from "../hooks/useProducts";
 
 const ProductPage: React.FC = () => {
   const { products, addProduct, removeProduct } = useProducts();
+  const [productName, setProductName] = useState("");
+  const [productPrice, setProductPrice] = useState(0);
+
+  const handleAddProduct = () => {
+    addProduct({ id: Date.now(), name: productName, price: productPrice });
+    setProductName("");
+    setProductPrice(0);
+  };
 
   return (
     <div>
@@ -15,13 +23,21 @@ const ProductPage: React.FC = () => {
           </li>
         ))}
       </ul>
-      <button
-        onClick={() =>
-          addProduct({ id: Date.now(), name: "New Product", price: 100 })
-        }
-      >
-        Add Product
-      </button>
+      <div>
+        <input
+          type="text"
+          value={productName}
+          onChange={(e) => setProductName(e.target.value)}
+          placeholder="Product Name"
+        />
+        <input
+          type="number"
+          value={productPrice}
+          onChange={(e) => setProductPrice(Number(e.target.value))}
+          placeholder="Product Price"
+        />
+        <button onClick={handleAddProduct}>Add Product</button>
+      </div>
     </div>
   );
 };

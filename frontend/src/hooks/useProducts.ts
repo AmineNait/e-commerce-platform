@@ -18,7 +18,7 @@ const useProducts = () => {
       products.forEach(context.addProduct);
     };
     loadProducts();
-  }, []);
+  }, [context.addProduct]);
 
   const addProduct = async (product: {
     id: number;

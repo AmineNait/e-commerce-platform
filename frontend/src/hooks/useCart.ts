@@ -19,7 +19,7 @@ const useCart = () => {
       cart.forEach(context.addToCart);
     };
     loadCart();
-  }, []);
+  }, [context.addToCart]);
 
   const addToCart = async (item: {
     id: number;
