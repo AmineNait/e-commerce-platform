@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { ProductContext } from "../contexts/ProductContext";
 import {
   fetchProducts,
@@ -12,13 +12,20 @@ const useProducts = () => {
     throw new Error("useProducts must be used within a ProductProvider");
   }
 
+  const didFetchProducts = useRef(false);
+
   useEffect(() => {
+    if (didFetchProducts.current) return;
+
     const loadProducts = async () => {
       const products = await fetchProducts();
+      context.clearProducts();
       products.forEach(context.addProduct);
     };
+
     loadProducts();
-  }, [context.addProduct]);
+    didFetchProducts.current = true;
+  }, [context]);
 
   const addProduct = async (product: {
     id: number;

@@ -1,4 +1,10 @@
-import { createContext, useState, useContext, ReactNode } from "react";
+import React, {
+  createContext,
+  useState,
+  ReactNode,
+  useContext,
+  useCallback,
+} from "react";
 
 interface CartItem {
   id: number;
@@ -9,8 +15,8 @@ interface CartItem {
 
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (item: CartItem) => void;
-  removeFromCart: (id: number) => void;
+  addItemToCart: (item: CartItem) => void;
+  removeItemFromCart: (id: number) => void;
   clearCart: () => void;
 }
 
@@ -21,14 +27,31 @@ export const CartContext = createContext<CartContextType | undefined>(
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
 
-  const addToCart = (item: CartItem) => setCart([...cart, item]);
-  const removeFromCart = (id: number) =>
-    setCart(cart.filter((item) => item.id !== id));
-  const clearCart = () => setCart([]);
+  const addItemToCart = useCallback((item: CartItem) => {
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
+      if (existingItem) {
+        return prevCart.map((cartItem) =>
+          cartItem.id === item.id
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
+        );
+      }
+      return [...prevCart, item]; // Assurez-vous d'ajouter l'élément correctement
+    });
+  }, []);
+
+  const removeItemFromCart = useCallback((id: number) => {
+    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+  }, []);
+
+  const clearCart = useCallback(() => {
+    setCart([]);
+  }, []);
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, clearCart }}
+      value={{ cart, addItemToCart, removeItemFromCart, clearCart }}
     >
       {children}
     </CartContext.Provider>

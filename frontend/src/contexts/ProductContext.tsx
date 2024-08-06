@@ -1,4 +1,10 @@
-import { createContext, useState, useContext, ReactNode } from "react";
+import React, {
+  createContext,
+  useState,
+  ReactNode,
+  useCallback,
+  useContext,
+} from "react";
 
 interface Product {
   id: number;
@@ -10,6 +16,7 @@ interface ProductContextType {
   products: Product[];
   addProduct: (product: Product) => void;
   removeProduct: (id: number) => void;
+  clearProducts: () => void;
 }
 
 export const ProductContext = createContext<ProductContextType | undefined>(
@@ -19,12 +26,22 @@ export const ProductContext = createContext<ProductContextType | undefined>(
 export const ProductProvider = ({ children }: { children: ReactNode }) => {
   const [products, setProducts] = useState<Product[]>([]);
 
-  const addProduct = (product: Product) => setProducts([...products, product]);
-  const removeProduct = (id: number) =>
-    setProducts(products.filter((p) => p.id !== id));
+  const addProduct = useCallback((product: Product) => {
+    setProducts((prevProducts) => [...prevProducts, product]);
+  }, []);
+
+  const removeProduct = useCallback((id: number) => {
+    setProducts((prevProducts) => prevProducts.filter((p) => p.id !== id));
+  }, []);
+
+  const clearProducts = useCallback(() => {
+    setProducts([]);
+  }, []);
 
   return (
-    <ProductContext.Provider value={{ products, addProduct, removeProduct }}>
+    <ProductContext.Provider
+      value={{ products, addProduct, removeProduct, clearProducts }}
+    >
       {children}
     </ProductContext.Provider>
   );

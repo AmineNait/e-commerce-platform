@@ -7,9 +7,13 @@ const ProductPage: React.FC = () => {
   const [productPrice, setProductPrice] = useState(0);
 
   const handleAddProduct = () => {
-    addProduct({ id: Date.now(), name: productName, price: productPrice });
-    setProductName("");
-    setProductPrice(0);
+    if (productName && productPrice > 0) {
+      addProduct({ id: Date.now(), name: productName, price: productPrice });
+      setProductName("");
+      setProductPrice(0);
+    } else {
+      alert("Product name and price must be provided");
+    }
   };
 
   return (

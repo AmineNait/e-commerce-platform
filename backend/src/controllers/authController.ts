@@ -1,19 +1,19 @@
-import { Router, Request, Response } from "express";
+import { Request, Response } from "express";
+import { login, logout } from "../services/authService";
 
-const router = Router();
-
-router.post("/login", (req: Request, res: Response) => {
+export const loginController = (req: Request, res: Response) => {
   const { username, password } = req.body;
-
-  if (username === "admin" && password === "admin") {
-    res.json({ message: "Login successful", token: "fake-jwt-token" });
-  } else {
-    res.status(401).json({ message: "Invalid credentials" });
+  try {
+    const result = login(username, password);
+    res.json(result);
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    res.status(401).json({ message: errorMessage });
   }
-});
+};
 
-router.post("/logout", (req: Request, res: Response) => {
-  res.json({ message: "Logout successful" });
-});
-
-export default router;
+export const logoutController = (_req: Request, res: Response) => {
+  const result = logout();
+  res.json(result);
+};

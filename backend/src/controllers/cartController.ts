@@ -1,32 +1,29 @@
-import { Router, Request, Response } from "express";
+import { Request, Response } from "express";
+import {
+  getCart,
+  addItemToCart,
+  removeItemFromCart,
+  clearCart,
+} from "../services/cartService";
 
-const router = Router();
+export const getCartController = (_req: Request, res: Response) => {
+  const cart = getCart();
+  res.json(cart);
+};
 
-router.get("/", (req: Request, res: Response) => {
-  // Implémenter la logique pour obtenir le panier
-  res.json([
-    { id: 1, name: "Product 1", price: 100, quantity: 2 },
-    { id: 2, name: "Product 2", price: 200, quantity: 1 },
-  ]);
-});
-
-router.post("/", (req: Request, res: Response) => {
-  // Implémenter la logique pour ajouter un article au panier
+export const addItemToCartController = (req: Request, res: Response) => {
   const item = req.body;
-  // Logique simplifiée pour l'exemple
-  res.json({ message: "Item added to cart", item });
-});
+  const addedItem = addItemToCart(item);
+  res.json({ message: "Item added to cart", item: addedItem });
+};
 
-router.delete("/:id", (req: Request, res: Response) => {
-  // Implémenter la logique pour supprimer un article du panier
+export const removeItemFromCartController = (req: Request, res: Response) => {
   const { id } = req.params;
-  // Logique simplifiée pour l'exemple
+  removeItemFromCart(parseInt(id, 10));
   res.json({ message: `Item with id ${id} removed from cart` });
-});
+};
 
-router.delete("/", (req: Request, res: Response) => {
-  // Implémenter la logique pour vider le panier
+export const clearCartController = (_req: Request, res: Response) => {
+  clearCart();
   res.json({ message: "Cart cleared" });
-});
-
-export default router;
+};

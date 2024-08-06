@@ -1,43 +1,26 @@
+import { v4 as uuidv4 } from "uuid";
+
 interface Product {
-  id: number;
+  id: string;
   name: string;
   price: number;
 }
 
-export const fetchProducts = async (): Promise<Product[]> => {
-  const response = await fetch("http://localhost:5000/api/products");
+let products: Product[] = [
+  { id: uuidv4(), name: "Product 1", price: 100 },
+  { id: uuidv4(), name: "Product 2", price: 200 },
+];
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch products");
-  }
-
-  return response.json();
+export const getAllProducts = (): Product[] => {
+  return products;
 };
 
-export const addProduct = async (product: Product) => {
-  const response = await fetch("http://localhost:5000/api/products", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(product),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to add product");
-  }
-
-  return response.json();
+export const addProduct = (product: Product): Product => {
+  const newProduct = { ...product, id: uuidv4() };
+  products.push(newProduct);
+  return newProduct;
 };
 
-export const removeProduct = async (id: number) => {
-  const response = await fetch(`http://localhost:5000/api/products/${id}`, {
-    method: "DELETE",
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to remove product");
-  }
-
-  return response.json();
+export const removeProduct = (id: string): void => {
+  products = products.filter((product) => product.id !== id);
 };

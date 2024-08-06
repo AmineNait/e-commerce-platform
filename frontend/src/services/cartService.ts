@@ -6,7 +6,7 @@ interface CartItem {
 }
 
 export const fetchCart = async (): Promise<CartItem[]> => {
-  const response = await fetch("/api/cart");
+  const response = await fetch("http://localhost:5000/api/cart");
 
   if (!response.ok) {
     throw new Error("Failed to fetch cart");
@@ -15,8 +15,8 @@ export const fetchCart = async (): Promise<CartItem[]> => {
   return response.json();
 };
 
-export const addToCart = async (item: CartItem) => {
-  const response = await fetch("/api/cart", {
+export const addToCart = async (item: CartItem): Promise<CartItem> => {
+  const response = await fetch("http://localhost:5000/api/cart", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -25,32 +25,29 @@ export const addToCart = async (item: CartItem) => {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to add to cart");
+    throw new Error("Failed to add item to cart");
   }
 
-  return response.json();
+  const responseData = await response.json();
+  return responseData.item; // Extrait l'élément de la réponse
 };
 
-export const removeFromCart = async (id: number) => {
-  const response = await fetch(`/api/cart/${id}`, {
+export const removeFromCart = async (id: number): Promise<void> => {
+  const response = await fetch(`http://localhost:5000/api/cart/${id}`, {
     method: "DELETE",
   });
 
   if (!response.ok) {
-    throw new Error("Failed to remove from cart");
+    throw new Error("Failed to remove item from cart");
   }
-
-  return response.json();
 };
 
-export const clearCart = async () => {
-  const response = await fetch("/api/cart", {
+export const clearCart = async (): Promise<void> => {
+  const response = await fetch("http://localhost:5000/api/cart", {
     method: "DELETE",
   });
 
   if (!response.ok) {
     throw new Error("Failed to clear cart");
   }
-
-  return response.json();
 };

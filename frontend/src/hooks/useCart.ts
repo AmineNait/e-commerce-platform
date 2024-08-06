@@ -1,9 +1,9 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { CartContext } from "../contexts/CartContext";
 import {
   fetchCart,
-  addToCart as addToCartService,
-  removeFromCart as removeFromCartService,
+  addToCart as addItemService,
+  removeFromCart as removeItemService,
   clearCart as clearCartService,
 } from "../services/cartService";
 
@@ -13,27 +13,33 @@ const useCart = () => {
     throw new Error("useCart must be used within a CartProvider");
   }
 
+  const didFetchCart = useRef(false);
+
   useEffect(() => {
+    if (didFetchCart.current) return;
+
     const loadCart = async () => {
       const cart = await fetchCart();
-      cart.forEach(context.addToCart);
+      context.clearCart();
+      cart.forEach(context.addItemToCart);
     };
-    loadCart();
-  }, [context.addToCart]);
 
-  const addToCart = async (item: {
+    loadCart();
+    didFetchCart.current = true;
+  }, [context]);
+
+  const addItemToCart = async (item: {
     id: number;
     name: string;
     price: number;
-    quantity: number;
   }) => {
-    const newItem = await addToCartService(item);
-    context.addToCart(newItem);
+    const newItem = await addItemService({ ...item, quantity: 1 });
+    context.addItemToCart(newItem);
   };
 
-  const removeFromCart = async (id: number) => {
-    await removeFromCartService(id);
-    context.removeFromCart(id);
+  const removeItemFromCart = async (id: number) => {
+    await removeItemService(id);
+    context.removeItemFromCart(id);
   };
 
   const clearCart = async () => {
@@ -41,7 +47,7 @@ const useCart = () => {
     context.clearCart();
   };
 
-  return { ...context, addToCart, removeFromCart, clearCart };
+  return { ...context, addItemToCart, removeItemFromCart, clearCart };
 };
 
 export default useCart;

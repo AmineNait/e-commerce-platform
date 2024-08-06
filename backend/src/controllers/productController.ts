@@ -1,27 +1,29 @@
-import { Router, Request, Response } from "express";
+import { Request, Response } from "express";
+import {
+  getAllProducts,
+  addProduct,
+  removeProduct,
+} from "../services/productService";
 
-const router = Router();
+export const getAllProductsController = (_req: Request, res: Response) => {
+  const products = getAllProducts();
+  res.json(products);
+};
 
-router.get("/", (req: Request, res: Response) => {
-  // Implémenter la logique pour obtenir tous les produits
-  res.json([
-    { id: 1, name: "Product 1", price: 100 },
-    { id: 2, name: "Product 2", price: 200 },
-  ]);
-});
+export const addProductController = (req: Request, res: Response) => {
+  const { name, price } = req.body;
+  if (!name || !price) {
+    return res
+      .status(400)
+      .json({ message: "Product name and price are required" });
+  }
 
-router.post("/", (req: Request, res: Response) => {
-  // Implémenter la logique pour ajouter un produit
-  const product = req.body;
-  // Logique simplifiée pour l'exemple
-  res.json({ message: "Product added", product });
-});
+  const newProduct = addProduct({ id: "", name, price });
+  res.json({ message: "Product added", product: newProduct });
+};
 
-router.delete("/:id", (req: Request, res: Response) => {
-  // Implémenter la logique pour supprimer un produit
+export const removeProductController = (req: Request, res: Response) => {
   const { id } = req.params;
-  // Logique simplifiée pour l'exemple
+  removeProduct(id);
   res.json({ message: `Product with id ${id} removed` });
-});
-
-export default router;
+};
