@@ -4,16 +4,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const body_parser_1 = __importDefault(require("body-parser"));
-const authController_1 = __importDefault(require("./controllers/authController"));
-const productController_1 = __importDefault(require("./controllers/productController"));
-const cartController_1 = __importDefault(require("./controllers/cartController"));
+const cors_1 = __importDefault(require("cors"));
+const mongoose_1 = __importDefault(require("mongoose"));
+const productRoutes_1 = __importDefault(require("./routes/productRoutes"));
+const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
+const cartRoutes_1 = __importDefault(require("./routes/cartRoutes"));
 const app = (0, express_1.default)();
-app.use(body_parser_1.default.json());
-app.get("/", (req, res) => {
-    res.send("Hello World!");
+const port = 5000;
+// Connexion à MongoDB
+mongoose_1.default
+    .connect("mongodb://localhost:27017/ecommerce")
+    .then(() => console.log("Connected to MongoDB"))
+    .catch((err) => console.error("Failed to connect to MongoDB", err));
+app.use((0, cors_1.default)({ origin: "http://localhost:3000" }));
+app.use(express_1.default.json());
+app.use("/api/products", productRoutes_1.default);
+app.use("/api/auth", authRoutes_1.default);
+app.use("/api/cart", cartRoutes_1.default);
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
 });
-app.use("/api/auth", authController_1.default);
-app.use("/api/products", productController_1.default);
-app.use("/api/cart", cartController_1.default);
-exports.default = app;

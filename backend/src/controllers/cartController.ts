@@ -1,29 +1,50 @@
 import { Request, Response } from "express";
-import {
-  getCart,
-  addItemToCart,
-  removeItemFromCart,
-  clearCart,
-} from "../services/cartService";
+import CartItem, { ICartItem } from "../models/cartModel";
 
-export const getCartController = (_req: Request, res: Response) => {
-  const cart = getCart();
-  res.json(cart);
+export const getCartController = async (req: Request, res: Response) => {
+  try {
+    const cartItems = await CartItem.find();
+    res.json(cartItems);
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+    res.status(500).json({ message: errorMessage });
+  }
 };
 
-export const addItemToCartController = (req: Request, res: Response) => {
-  const item = req.body;
-  const addedItem = addItemToCart(item);
-  res.json({ message: "Item added to cart", item: addedItem });
+export const addItemToCartController = async (req: Request, res: Response) => {
+  const { productId, name, price, quantity } = req.body;
+  const newItem: ICartItem = new CartItem({ productId, name, price, quantity });
+
+  try {
+    const savedItem = await newItem.save();
+    res.json({ message: "Item added to cart", item: savedItem });
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+    res.status(500).json({ message: errorMessage });
+  }
 };
 
-export const removeItemFromCartController = (req: Request, res: Response) => {
+export const removeItemFromCartController = async (
+  req: Request,
+  res: Response
+) => {
   const { id } = req.params;
-  removeItemFromCart(parseInt(id, 10));
-  res.json({ message: `Item with id ${id} removed from cart` });
+
+  try {
+    await CartItem.findByIdAndDelete(id);
+    res.json({ message: `Item with id ${id} removed from cart` });
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+    res.status(500).json({ message: errorMessage });
+  }
 };
 
-export const clearCartController = (_req: Request, res: Response) => {
-  clearCart();
-  res.json({ message: "Cart cleared" });
+export const clearCartController = async (req: Request, res: Response) => {
+  try {
+    await CartItem.deleteMany();
+    res.json({ message: "Cart cleared" });
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+    res.status(500).json({ message: errorMessage });
+  }
 };

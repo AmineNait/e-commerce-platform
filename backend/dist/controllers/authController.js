@@ -1,17 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
-const router = (0, express_1.Router)();
-router.post("/login", (req, res) => {
+exports.logoutController = exports.loginController = void 0;
+const authService_1 = require("../services/authService");
+const loginController = (req, res) => {
     const { username, password } = req.body;
-    if (username === "admin" && password === "admin") {
-        res.json({ message: "Login successful", token: "fake-jwt-token" });
+    try {
+        const result = (0, authService_1.login)(username, password);
+        res.json(result);
     }
-    else {
-        res.status(401).json({ message: "Invalid credentials" });
+    catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        res.status(401).json({ message: errorMessage });
     }
-});
-router.post("/logout", (req, res) => {
-    res.json({ message: "Logout successful" });
-});
-exports.default = router;
+};
+exports.loginController = loginController;
+const logoutController = (_req, res) => {
+    const result = (0, authService_1.logout)();
+    res.json(result);
+};
+exports.logoutController = logoutController;
